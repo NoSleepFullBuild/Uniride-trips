@@ -10,19 +10,22 @@ export enum TripStatus {
 }
 
 @Entity()
-export class UserTrip extends BaseEntity {
+export class Trip extends BaseEntity {
 
     @Column({ type: 'int'})
     userId: number;
-
-    @Column({ type: 'int'})
-    driverId: number;
     
-    @Column({ type: 'varchar', length: 255 })
-    startLocation: string;
+    @Column({ type: 'float'})
+    latitudeStartLocation: number;
 
-    @Column({ type: 'varchar', length: 255 })
-    endLocation: string;
+    @Column({ type: 'float'})
+    longitudeStartLocation: number;
+
+    @Column({ type: 'float'})
+    latitudeEndLocation: number;
+
+    @Column({ type: 'float'})
+    longitudeEndLocation: number;
 
     @Column({ type: 'varchar', length: 255 })
     startTime: string;
@@ -33,11 +36,18 @@ export class UserTrip extends BaseEntity {
     @Column({ type: 'varchar', length: 255 })
     date: string;
 
-    @Column({ type: 'int'})
+    @Column({ type: 'float'})
     price: number;
 
-    @Column({ type: 'int' })
+    @Column({ type: 'float' })
     distance: number;
+
+    @Column({ type: 'int'})
+    seats: number;
+
+    // Passengers is an array of user ids, is max size is the number of seats
+    @Column({ type: 'simple-array', nullable: true })
+    passengers: number[];
 
     // status of the trip, an ENUM
     @Column({ type: 'enum', enum: TripStatus, default: TripStatus.PENDING })

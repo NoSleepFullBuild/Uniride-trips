@@ -14,16 +14,18 @@ AppDataSource
 const app = express()
 app.use(express.json())
 
-const tripsController = new TripsController();
+const tripController = new TripsController();
 
-app.get('/api/trips/users', tripsController.getUserTrips.bind(tripsController));
-app.get('/api/trips/users/:id', tripsController.getUserTripById.bind(tripsController));
-// app.post('/api/trips/users', tripsController.createUserTrip.bind(tripsController));
+app.get('/api/trips', tripController.getTrips.bind(tripController));
+app.get('/api/trips/:id', tripController.getTripById.bind(tripController));
 
-app.get('/api/trips/drivers', tripsController.getDriverTrips.bind(tripsController));
-app.get('/api/trips/drivers/:id', tripsController.getDriverTripById.bind(tripsController));
-app.post('/api/trips/drivers', tripsController.createDriverTrip.bind(tripsController));
+app.post('/api/trips', tripController.createTrip.bind(tripController));
+app.post('/api/trips/:id/join', tripController.joinTrip.bind(tripController));
+app.put('/api/trips/:id', tripController.updateTrip.bind(tripController));
+app.delete('/api/trips/:id', tripController.deleteTrip.bind(tripController));
 
+app.get('/api/trips/passengers/:id', tripController.getTripsByPassengerId.bind(tripController));
+app.get('/api/trips/drivers/:id', tripController.getTripsByDriverId.bind(tripController));
 
 
 app.listen(3003, ()=>{
