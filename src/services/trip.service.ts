@@ -1,7 +1,11 @@
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import {  Trip } from '../entities/trip.entity';
 import { AppDataSource } from '../app-data-source';
 import { CalculService } from './calcul.service';
+
+import { areEqual } from './utils.service';
+import { BaseDTO } from '../entities/dto/trip.create.dto';
+
 
 export class TripService {
 
@@ -22,6 +26,16 @@ export class TripService {
         }
     }
 
+    async getTripsExceptUser(userId: number) {
+        try {
+            const trips = await this.repository.find({ where: { userId: Not(userId) } });
+            return trips;
+        } catch (error) {
+            throw error;
+        }
+    }
+    $
+
     async getTripById(id: number) {
         try {
             const trip = await this.repository.findOneBy({ id });
@@ -34,48 +48,43 @@ export class TripService {
         }
     }
 
-    async createTrip(tripData: { 
-        driver: string; 
-        passengers: string[]; 
-        latitudeStartLocation: number; 
-        longitudeStartLocation: number; 
-        latitudeEndLocation: number; 
-        longitudeEndLocation: number; 
-        startTime: string; 
-        endTime: string; 
-        date: string; 
-    }) {
+    async createTrip(tripData: BaseDTO) {
+
         try {
-            if (tripData.startTime > tripData.endTime) {
+            if (tripData.data.startTime > tripData.data.endTime) {
                 throw new Error('Start time must be less than end time');
             }
 
-            if (tripData.date < new Date().toISOString().split('T')[0]) {
+            if (tripData.data.date < new Date().toISOString().split('T')[0]) {
                 throw new Error('Date must be greater than or equal to today');
             }
 
-            // Correction de la vérification des coordonnées de localisation
-            if (tripData.latitudeStartLocation === tripData.latitudeEndLocation && tripData.longitudeStartLocation === tripData.longitudeEndLocation) {
-                throw new Error('Start location and end location must be different');
+            if (areEqual(tripData.data.latitudeStartLocation, tripData.data.latitudeEndLocation)) {
+                throw new Error('Start and end latitide location must not be the same');
+            }
+
+            if (areEqual(tripData.data.longitudeStartLocation, tripData.data.longitudeEndLocation)) {
+                throw new Error('Start and end longitude location must not be the same');
             }
 
             // Adaptation pour calculer la distance correctement
             const distance = this.calculService.calculateDistance(
-                tripData.latitudeStartLocation, 
-                tripData.longitudeStartLocation, 
-                tripData.latitudeEndLocation, 
-                tripData.longitudeEndLocation
+                tripData.data.latitudeStartLocation, 
+                tripData.data.longitudeStartLocation, 
+                tripData.data.latitudeEndLocation, 
+                tripData.data.longitudeEndLocation
             );
 
             const price = this.calculService.calculatePriceForMeters(distance);
 
             const trip = {
-                ...tripData,
+                ...tripData.data,
+                userId: tripData.metadata.user.id,
                 price,
                 distance,
                 passengers: [],
-                createdBy: "admin",
-                updatedBy: "admin",
+                createdBy: tripData.metadata.user.email,
+                updatedBy: tripData.metadata.user.email,
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
@@ -85,12 +94,19 @@ export class TripService {
             return savedTrip;
 
         } catch (error) {
+            console.log(error)
             throw error;
         }
     }
 
-    async joinTrip(tripId: number, passengerId: number): Promise<Trip> {
+    async joinTrip(tripId: number, userId: number): Promise<Trip> {
         try {
+
+            // Verify is the user does not join his own trip, check userId and tripId
+            const tripExist = await this.repository.findOneBy({ id: tripId, userId });
+            if(tripExist) {
+                throw new Error('You cannot join your own trip');
+            }
 
             const trip = await this.repository.findOneBy({ id: tripId });
             if (!trip) {
@@ -101,7 +117,7 @@ export class TripService {
                 throw new Error('No available seats');
             }
 
-            trip.passengers.push(passengerId);
+            trip.passengers.push(userId);
             trip.seats -= 1; 
 
             const updatedTrip = await this.repository.save(trip);
@@ -112,7 +128,8 @@ export class TripService {
         }
     }
 
-    async updateTrip(id: number, updateData: Partial<Trip>) {
+    
+    async updateTrip(id: number, updateData: Partial<BaseDTO>) {
 
         try {
 
@@ -127,7 +144,7 @@ export class TripService {
                 updatedDate: new Date()
             }
 
-            const updatedTrip = await this.repository.update(id, updateData);
+            const updatedTrip = await this.repository.update(id, updateData.data);
             return updatedTrip;
         } catch (error) {
             throw error;
