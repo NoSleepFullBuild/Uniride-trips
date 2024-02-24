@@ -1,10 +1,9 @@
 import { Not, Repository } from 'typeorm';
-import {  Trip } from '../entities/trip.entity';
+import { Trip } from '@nosleepfullbuild/uniride-library/dist/entity/trip/trip.entity';
 import { AppDataSource } from '../app-data-source';
 import { CalculService } from './calcul.service';
 
 import { areEqual } from './utils.service';
-import { BaseDTO } from '../entities/dto/trip.create.dto';
 
 
 export class TripService {
@@ -48,7 +47,7 @@ export class TripService {
         }
     }
 
-    async createTrip(tripData: BaseDTO) {
+    async createTrip(tripData: any) {
 
         try {
             if (tripData.data.startTime > tripData.data.endTime) {
@@ -79,7 +78,7 @@ export class TripService {
 
             const trip = {
                 ...tripData.data,
-                userId: tripData.metadata.user.id,
+                ...tripData.userId,
                 price,
                 distance,
                 passengers: [],
@@ -88,6 +87,8 @@ export class TripService {
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
+
+            console.log(trip)
 
             const newTrip = this.repository.create(trip);
             const savedTrip = await this.repository.save(newTrip);
@@ -129,7 +130,7 @@ export class TripService {
     }
 
     
-    async updateTrip(id: number, updateData: Partial<BaseDTO>) {
+    async updateTrip(id: number, updateData: Partial<any>) {
 
         try {
 

@@ -42,7 +42,7 @@ export class TripsController{
 
     async joinTrip(req: Request, res: Response) {
         try {
-            const trip = await this.tripService.joinTrip(parseInt(req.params.id), req.body.passengers);
+            const trip = await this.tripService.joinTrip(parseInt(req.params.id), req.body.userId);
             res.status(200).json(trip);
         } catch (error) {
             res.status(500).json({ error: error.message });
