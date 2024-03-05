@@ -3,7 +3,7 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - develop
+      - main
 
 jobs:
   deploy:
@@ -29,13 +29,13 @@ jobs:
             if [ -d "./Uniride-trips" ]; then
               cd Uniride-trips
               git fetch
-              git pull origin develop
-              git checkout develop
+              git pull origin main
+              git checkout main
             else
               git clone https://${{ secrets.TOKEN_REPO }}:x-oauth-basic@github.com/NoSleepFullBuild/Uniride-trips.git
               cd Uniride-trips
               git fetch
-              git checkout develop
+              git checkout main
             fi
             if [ ! -f ".env" ]; then
               touch .env
@@ -44,9 +44,9 @@ jobs:
               touch .env
             fi
             echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-            echo "PORT=${{ secrets.TRIPS_PORT }}" >> .env
-            echo "DB_PORT=${{ secrets.DB_USER_PORT_DEV }}" >> .env
-            echo "DB_NAME=${{ secrets.DB_USER_NAME_DEV }}" >> .env
+            echo "PORT=${{ secrets.TRIPS_PORT_PROD }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_USER_PORT_PROD }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_USER_NAME_PROD }}" >> .env
             echo "DB_USER=${{ secrets.DB_USER }}" >> .env
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             echo "TOKEN_REPO=${{ secrets.TOKEN_REPO }}" >> .env

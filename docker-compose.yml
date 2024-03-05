@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  trips_service:
+  trips_service-prod:
     build:
       context: .
       dockerfile: Dockerfile
