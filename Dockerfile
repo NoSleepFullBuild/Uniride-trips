@@ -15,7 +15,9 @@ RUN npm install
 # Im using Typescript
 
 COPY . .
+
 RUN npm run build
+
 RUN ls -l /usr/src/app/dist
 
 CMD [ "npm", "start" ]
