@@ -28,6 +28,6 @@ app.get('/api/trips/passengers/:id', tripController.getTripsByPassengerId.bind(t
 app.get('/api/trips/drivers/:id', tripController.getTripsByDriverId.bind(tripController));
 
 
-app.listen(3003, ()=>{
-    console.log("User service is running on port 3001")
+app.listen(3005, ()=>{
+    console.log("User service is running on port 3005")
 })
