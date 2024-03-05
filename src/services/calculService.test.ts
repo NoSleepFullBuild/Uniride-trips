@@ -9,10 +9,11 @@ describe('CalculService', () => {
 
     test('should calculate distance correctly', async () => {
         // Coordonnées de Paris à Lyon approximativement
-        const startLocation = '48.8584,2.2945'; // Tour Eiffel
-        const endLocation = '48.8738,2.2950'; // Arc de Triomphe
-
-        const distance = await service.calculateDistance(startLocation, endLocation);
+        const lat1 = 48.8566;
+        const lon1 = 2.3522;
+        const lat2 = 45.7578;
+        const lon2 = 4.8328;
+        const distance = service.calculateDistance(lat1, lon1, lat2, lon2);
         expect(distance / 1000).toBeCloseTo(1.7, 1); // Arrondi à 1 chiffre après la virgule
     });
 
