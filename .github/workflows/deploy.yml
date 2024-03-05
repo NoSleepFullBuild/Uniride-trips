@@ -1,0 +1,55 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Executing remote ssh commands to deploy the application
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/projects/uniride
+            if [ -d "./Uniride-trips" ]; then
+              cd Uniride-trips
+              git fetch
+              git pull origin develop
+              git checkout develop
+            else
+              git clone https://${{ secrets.TOKEN_REPO }}:x-oauth-basic@github.com/NoSleepFullBuild/Uniride-trips.git
+              cd Uniride-trips
+              git fetch
+              git checkout develop
+            fi
+            if [ ! -f ".env" ]; then
+              touch .env
+            else
+              rm .env
+              touch .env
+            fi
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_USER_PORT_DEV }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_USER_NAME_DEV }}" >> .env
+            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "TOKEN_REPO=${{ secrets.TOKEN_REPO }}" >> .env
+            # Correction : Assurez-vous que la version de Node.js est vérifiée dans le conteneur Docker et non sur le serveur hôte
+            docker-compose up -d --build
+

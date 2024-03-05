@@ -25,6 +25,18 @@ export class TripService {
         }
     }
 
+    async getUserByTripId(tripId: number) {
+        try {
+            const trip = await this.repository.findOneBy({ id: tripId });
+            if (!trip) {
+                throw new Error('Trip not found');
+            }
+            return trip.userId;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async getTripsExceptUser(userId: number) {
         try {
             const trips = await this.repository.find({ where: { userId: Not(userId) } });

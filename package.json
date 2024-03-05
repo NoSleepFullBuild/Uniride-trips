@@ -2,18 +2,16 @@
   "name": "journey-service",
   "version": "1.0.0",
   "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
-  "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/app.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/app.js",
     "test": "jest --coverage"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nosleepfullbuild/uniride-library": "1.1.9",
     "@types/express": "^4.17.20",
     "@types/node": "^20.8.9",
     "axios": "^1.6.7",

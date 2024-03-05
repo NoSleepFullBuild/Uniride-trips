@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  trips_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - TOKEN_REPO=${TOKEN_REPO}
+    ports:
+      - "3005:3005"
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      TOKEN_REPO: ${TOKEN_REPO}
