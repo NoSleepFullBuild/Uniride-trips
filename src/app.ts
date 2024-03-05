@@ -2,6 +2,10 @@ import * as express from "express"
 import { AppDataSource } from "./app-data-source"
 import { TripsController } from "./controllers/trips.controller"
 
+// read .env
+require('dotenv').config();
+
+
 AppDataSource
     .initialize()
     .then(() => {
@@ -34,6 +38,6 @@ app.get('/api/trips/passengers/:id', tripController.getTripsByPassengerId.bind(t
 app.get('/api/trips/drivers/:id', tripController.getTripsByDriverId.bind(tripController));
 
 
-app.listen(3005, ()=>{
+app.listen(process.env.TRIPS_PORT, ()=>{
     console.log("User service is running on port 3005")
 })
