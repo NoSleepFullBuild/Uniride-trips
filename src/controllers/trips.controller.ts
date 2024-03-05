@@ -18,6 +18,15 @@ export class TripsController{
         }
     }
 
+    async getUserByTripId(req: Request, res: Response) {
+        try {
+            const user = await this.tripService.getUserByTripId(parseInt(req.params.id));
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     async getTripById(req: Request, res: Response) {
         try {
             const trip = await this.tripService.getTripById(parseInt(req.params.id));
